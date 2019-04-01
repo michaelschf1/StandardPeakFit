@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def phaser(x, y, fc, y0):
+def phaseFitS21(x, y, fc, y0, df=0.009, dy=50, Qt=30000, dQt=30000):
     #    if abs(y) > 90:
     #        y = y - sign(y)*180
 
@@ -24,11 +24,6 @@ def phaser(x, y, fc, y0):
     # print(gmodel.param_names)
     # print(gmodel.independent_vars)
 
-    df = 0.009
-    dy = 50
-    Qt = 30000
-    dQt = Qt
-
     params = gmodel.make_params()
 
     params.add('y0', value=y0, min=y0 - dy, max=y0 + dy)
@@ -37,7 +32,40 @@ def phaser(x, y, fc, y0):
     params.add('intercept', value=1, vary=True)
     params.add('slope', value=0, vary=True)
 
-    result = gmodel.fit(y, params, x=x)
+    results = gmodel.fit(y, params, x=x)
 
-    return result
+    return results
 
+
+def phaseFitS11(x, y, fc, y0, df=0.009, dy=50, Qt=30000, dQt=30000):
+    def phaseFit(x, Qc, Qi, fr):
+        return y0 - 180 * np.atan(2 * ((Qi * Qc) / (Qi + Qc)) * (x - fr) / fr) / pi - 180 * np.atan(
+                2 * ((Qc * Qi) / (Qi - Qc)) * ((x - fr) / fr)) / pi
+
+    pass
+
+
+def peakFits21():
+    pass
+
+
+def peakFitS11():
+    pass
+
+
+def circleFit():
+    pass
+
+
+def input(file, folder, type):
+    filepath = folder + '/' + file
+    fHz, s21dB, s21deg = np.loadtxt(filepath, unpack=True)
+    return fHz, s21dB, s21deg
+
+
+def output(file, folder):
+    pass
+
+
+def plotFit(input, results):
+    pass
