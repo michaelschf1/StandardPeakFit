@@ -45,8 +45,29 @@ def phaseFitS11(x, y, fc, y0, df=0.009, dy=50, Qt=30000, dQt=30000):
     pass
 
 
-def peakFits21():
-    pass
+def peakFits21(x, y, fc, df=0.009, Qt=30000, dQt=30000, Qc=30000, dQc=30000):
+
+
+    def peakFit(x, Qt, Qc, fr):
+        return 10*np.log10( (Qt/Qc)**2 / (1 + 4* (Qt*((x - fr) /fr))**2) )
+
+    gmodel = Model(peakFit)
+    gmodel = gmodel + LinearModel()
+
+    # print(gmodel.param_names)
+    # print(gmodel.independent_vars)
+
+    params = gmodel.make_params()
+
+    params.add('Qt', value=Qt, min=Qt - dQt, max=Qt + dQt)
+    params.add('Qc', value=Qc, min=Qc - dQc, max=Qt + dQc)
+    params.add('fr', value=fc, min=fc - df, max=fc + df)
+    params.add('intercept', value=1, vary=True)
+    params.add('slope', value=0, vary=True)
+
+    results = gmodel.fit(y, params, x=x)
+
+    return results
 
 
 def peakFitS11():
